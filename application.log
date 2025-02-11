@@ -1,0 +1,24 @@
+2025-02-11 17:22:03,059:INFO:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-02-11 17:22:03,059:INFO:[33mPress CTRL+C to quit[0m
+2025-02-11 17:22:03,059:INFO: * Restarting with stat
+2025-02-11 17:22:03,162:WARNING: * Debugger is active!
+2025-02-11 17:22:03,162:INFO: * Debugger PIN: 189-050-668
+2025-02-11 17:22:19,823:DEBUG:Debug level log
+2025-02-11 17:22:19,824:INFO:info level log
+2025-02-11 17:22:19,824:WARNING:warning level log
+2025-02-11 17:22:19,824:ERROR:Error level log
+2025-02-11 17:22:19,824:CRITICAL:Critical level log
+2025-02-11 17:22:19,824:INFO:127.0.0.1 - - [11/Feb/2025 17:22:19] "GET / HTTP/1.1" 200 -
+2025-02-11 17:22:47,708:DEBUG:Debug level log
+2025-02-11 17:22:47,709:INFO:info level log
+2025-02-11 17:22:47,709:WARNING:warning level log
+2025-02-11 17:22:47,709:ERROR:Error level log
+2025-02-11 17:22:47,709:CRITICAL:Critical level log
+2025-02-11 17:22:47,709:INFO:127.0.0.1 - - [11/Feb/2025 17:22:47] "GET / HTTP/1.1" 200 -
+2025-02-11 17:23:02,544:DEBUG:Debug level log
+2025-02-11 17:23:02,544:INFO:info level log
+2025-02-11 17:23:02,545:WARNING:warning level log
+2025-02-11 17:23:02,545:ERROR:Error level log
+2025-02-11 17:23:02,545:CRITICAL:Critical level log
+2025-02-11 17:23:02,545:INFO:127.0.0.1 - - [11/Feb/2025 17:23:02] "GET / HTTP/1.1" 200 -
