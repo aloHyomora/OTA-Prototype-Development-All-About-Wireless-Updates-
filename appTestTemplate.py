@@ -10,3 +10,7 @@ def hello_name(name):
 def show_fruits():
     fruits = ['Apple', 'Banana','Grape','Cherry',]
     return render_template('fruits_list.html', fruits=fruits)
+
+@app.route('/messages')
+def show_messages():
+    return render_template('messages.html')

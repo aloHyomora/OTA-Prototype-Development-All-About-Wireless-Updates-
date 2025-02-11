@@ -1,0 +1,15 @@
+<!-- templates/messages.html-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Simple Message Example</title>
+    </head>
+    <body>
+        {% from "macros.html" import display_message %}
+        <!-- 매크로 호출-->
+         {{ display_message('환영합니다. 여기는 우리 사이트입니다.')}}
+         {{ display_message('주의하세요, 에러가 발생했습니다.')}}
+         {{ display_message('성공! 작업이 성공적으로 완료되었습니다.')}}
+    </body>
+</html>
