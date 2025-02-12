@@ -42,4 +42,4 @@ def index():
      db.session.delete(user)
      db.session.commit()
 
-     return 'CRUD(Create, Read, Update, Delete) operations completed'
+     return 'CRUD(Create, Read, Update, Delete) operations completed'SQLAlchemy
