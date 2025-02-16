@@ -16,3 +16,4 @@ def manage_user():
     elif request.method == 'DELETE':
         # DELETE 요청 처리 로직
         return "Delete User"
+    
