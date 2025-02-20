@@ -1,9 +1,30 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, send_file, abort
 from database import db
 from models import Firmware
+import os
 
 firmware_bp = Blueprint('firmware', __name__)
 
+@firmware_bp.route('/download/<version>', methods=['GET'])
+def download_firmware(version):
+    # DB에서 해당 버전의 펌웨어 정보 찾기
+    firmware = Firmware.query.filter_by(version=version, status='active').first()
+    if not firmware:
+        return jsonify({"error": f"Firmware version {version} not found"}), 404
+
+    # Flask 실행 디렉토리 기준으로 절대 경로 변환
+    base_dir = os.getcwd()
+    absolute_path = os.path.abspath(os.path.join(base_dir, firmware.file_path.lstrip('/')))
+
+    # 파일 존재 여부 확인
+    if not os.path.exists(absolute_path):
+        return jsonify({"error": "Firmware file not found on server"}), 404
+
+    # 원래 파일명 유지하여 전송
+    filename = os.path.basename(absolute_path)  # 파일명만 추출
+    return send_file(absolute_path, as_attachment=True, download_name=filename)
+
+# 존재하는 데이터 확인 라우터
 @firmware_bp.route('/all', methods=['GET'])
 def get_all_firmwares():
     firmwares = Firmware.query.all()
