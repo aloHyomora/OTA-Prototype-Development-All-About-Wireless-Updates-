@@ -5,6 +5,7 @@ import os
 
 firmware_bp = Blueprint('firmware', __name__)
 
+# 바이너리 펌웨어 (.bin) 파일과 함께 HTTP 200 상태 코드 및 헤더 반환
 @firmware_bp.route('/download/<version>', methods=['GET'])
 def download_firmware(version):
     # DB에서 해당 버전의 펌웨어 정보 찾기
@@ -22,7 +23,13 @@ def download_firmware(version):
 
     # 원래 파일명 유지하여 전송
     filename = os.path.basename(absolute_path)  # 파일명만 추출
-    return send_file(absolute_path, as_attachment=True, download_name=filename)
+
+    # Content-Disposition 헤더 명시적으로 설정
+    headers = {
+        "Content-Disposition": f"attachment; filename={filename}",
+        "Content-Type": "application/octet-stream"
+    }
+    return send_file(absolute_path, as_attachment=True, download_name=filename, mimetype="application/octet-stream"), 200, headers
 
 # 존재하는 데이터 확인 라우터
 @firmware_bp.route('/all', methods=['GET'])
