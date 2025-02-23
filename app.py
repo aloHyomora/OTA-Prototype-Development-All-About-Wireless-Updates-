@@ -8,6 +8,7 @@ from config import Config                   # DB 세팅
 from database import db                     # DB 인스턴스
 from routes.firmware import firmware_bp     # 펌웨어 관련 라우트
 from routes.auth import auth_bp             # 인증 관련 라우트
+from routes.firmware import firmware_bp, sync_sha256  # sync_sha256 가져오기, 서버 시작시 SHA-256 자동 동기화
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -20,5 +21,10 @@ app.register_blueprint(auth_bp, url_prefix='/auth')
 
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()  # 필요한 경우 DB 테이블 생성
+        print("Flask 애플리케이션 컨텍스트 활성화")  # 실행 확인 로그
+        db.create_all()  # DB 테이블 생성
+        print("데이터베이스 테이블 생성 완료")  # 실행 확인 로그
+        sync_sha256()  # SHA-256 동기화 실행
+        print("서버 시작 전 SHA-256 동기화 실행 완료")  # 실행 확인 로그
+
     app.run(host="0.0.0.0", port=5000)

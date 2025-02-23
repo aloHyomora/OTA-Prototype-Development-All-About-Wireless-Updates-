@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, send_file, abort
+from flask import Blueprint, jsonify, request, send_file, abort, current_app
 from database import db
 from models import Firmware
 import os
@@ -77,3 +77,41 @@ def add_firmware():
     db.session.add(new_firmware)
     db.session.commit()
     return jsonify({"message": "Firmware added successfully!"})
+
+import hashlib
+
+# SHA-256 해시값 계산 함수
+def calculate_sha256(file_path):
+    """주어진 파일의 SHA-256 해시값을 계산"""
+    sha256_hash = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
+
+# SHA-256 해시값을 동기화하는 함수
+def sync_sha256():
+    """Flask 애플리케이션 컨텍스트 내에서 SHA-256 해시값을 데이터베이스와 동기화"""
+    with current_app.app_context():  # Flask 컨텍스트 활성화
+        updated_files = []
+        firmwares = Firmware.query.all()  # 애플리케이션 컨텍스트 내에서 실행
+
+        for firmware in firmwares:
+            base_dir = os.getcwd()
+            absolute_path = os.path.abspath(os.path.join(base_dir, firmware.file_path.lstrip('/')))
+
+            if os.path.exists(absolute_path):
+                sha256_hash = calculate_sha256(absolute_path)
+                firmware.sha256 = sha256_hash  # DB 업데이트
+                db.session.commit()
+                updated_files.append({"version": firmware.version, "sha256": sha256_hash})
+            else:
+                print(f"파일이 존재하지 않음: {absolute_path}")
+
+        print("SHA-256 동기화 완료:", updated_files)
+
+@firmware_bp.route('/sync_sha256', methods=['POST'])
+def sync_sha256_api():
+    """API를 통해 SHA-256 해시값 동기화 실행"""
+    sync_sha256()
+    return jsonify({"message": "SHA-256 sync completed"})
