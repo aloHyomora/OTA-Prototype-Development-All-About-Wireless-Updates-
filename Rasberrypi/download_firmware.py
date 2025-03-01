@@ -6,7 +6,7 @@ import os
 FLASK_SERVER = "http://192.168.0.2:5000"
 FIRMWARE_VERSION = "10.1.0"
 
-# 1️⃣ Fetch the latest firmware details from the server
+# 1️. Fetch the latest firmware details from the server
 response = requests.get(f"{FLASK_SERVER}/firmware/latest")
 if response.status_code != 200:
     print("Failed to retrieve firmware details from the server.")
@@ -20,7 +20,14 @@ file_name = os.path.basename(firmware_info["file_path"])  # Preserve original fi
 print(f"Firmware file from server: {file_name}")
 print(f"Expected SHA-256 from server: {server_sha256}")
 
-# 2️⃣ Download the firmware file
+# 2️. Download the firmware file
+
+# 저장할 폴더 경로 설정
+save_dir = "/home/aloho/firmware_OTAProject"  # 원하는 폴더 경로 설정
+os.makedirs(save_dir, exist_ok=True)  # 폴더가 없으면 생성
+# 전체 저장 경로
+save_file_path = os.path.join(save_dir, file_name)
+
 print("Downloading firmware...")
 response = requests.get(file_url, stream=True)
 if response.status_code != 200:
@@ -28,13 +35,13 @@ if response.status_code != 200:
     exit()
 
 # Save the downloaded firmware
-with open(file_name, "wb") as file:
+with open(save_file_path, "wb") as file:
     for chunk in response.iter_content(chunk_size=1024):  # Download in 1KB chunks
         file.write(chunk)
 
 print(f"Download completed: {file_name}")
 
-# 3️⃣ Compute SHA-256 hash of the downloaded file
+# 3️. Compute SHA-256 hash of the downloaded file
 def calculate_sha256(file_path):
     """Compute the SHA-256 hash of a given file."""
     sha256_hash = hashlib.sha256()
@@ -46,7 +53,7 @@ def calculate_sha256(file_path):
 local_sha256 = calculate_sha256(file_name)
 print(f"Computed SHA-256: {local_sha256}")
 
-# 4️⃣ Compare the computed hash with the expected hash from the server
+# 4️. Compare the computed hash with the expected hash from the server
 if local_sha256 == server_sha256:
     print("Integrity check passed: The file is not corrupted.")
     # TODO: Proceed with firmware update on MCU

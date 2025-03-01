@@ -78,6 +78,57 @@ def add_firmware():
     db.session.commit()
     return jsonify({"message": "Firmware added successfully!"})
 
+# 새로운 펌웨어 추가 함수
+def add_firmware_entry(version, file_path, sha256, status):
+    existing_firmware = Firmware.query.filter_by(version=version).first()
+    if existing_firmware:
+        print(f"이미 존재하는 버전: {version}, 추가하지 않음.")
+        return
+
+    file_size = os.path.getsize(file_path)
+    
+    # 새 펌웨어 데이터 생성 및 DB 추가
+    new_firmware = Firmware(
+        version=version,
+        file_path=file_path,
+        sha256=sha256,
+        device_type="default",  # 필요 시 변경 가능
+        size=file_size,
+        status=status
+    )
+    db.session.add(new_firmware)
+    db.session.commit()
+    print(f"새 펌웨어 추가 완료: {version}")
+# 펌웨어 폴더에서 새 파일을 찾아 DB에 추가
+def sync_firmware_directory():
+    firmware_dir = os.path.join(os.getcwd(), "firmware")
+    os.makedirs(firmware_dir, exist_ok=True)  # 폴더가 없으면 생성
+
+    print("\n새 펌웨어 파일 확인 중...")
+
+    existing_firmware_versions = {fw.version for fw in Firmware.query.all()}  # 기존 DB 버전 가져오기
+
+    for filename in os.listdir(firmware_dir):
+        if filename.endswith(".bin"):
+            version = filename.replace(".bin", "").split("v")[-1]
+            file_path = os.path.join(firmware_dir, filename)
+
+            # 이미 존재하는 버전이면 스킵
+            if version in existing_firmware_versions:
+                continue
+            
+            sha256_hash = calculate_sha256(file_path)
+
+            # 키보드 입력으로 status 설정
+            while True:
+                status = input(f"펌웨어 {filename}의 상태를 입력하세요 (active/deprecated): ").strip().lower()
+                if status in ["active", "deprecated"]:
+                    break
+                print("잘못된 입력! 'active' 또는 'deprecated'만 입력 가능")
+
+            add_firmware_entry(version, file_path, sha256_hash, status)
+
+    print("펌웨어 동기화 완료!")
 import hashlib
 
 # SHA-256 해시값 계산 함수
@@ -98,7 +149,7 @@ def sync_sha256():
 
         for firmware in firmwares:
             base_dir = os.getcwd()
-            absolute_path = os.path.abspath(os.path.join(base_dir, firmware.file_path.lstrip('/')))
+            absolute_path = '/' + firmware.file_path.lstrip('/') # os.path.join() # os.path.abspath()
 
             if os.path.exists(absolute_path):
                 sha256_hash = calculate_sha256(absolute_path)
