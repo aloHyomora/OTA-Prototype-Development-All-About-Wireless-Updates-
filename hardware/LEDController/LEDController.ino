@@ -1,17 +1,28 @@
 #include "esp_ota_ops.h"
 #include "esp_partition.h"
 #include "esp_system.h"
-#include <string.h>
-#define LED_PIN 23  // ESP32의 GPIO 23번 핀에 LED 연결
 #include "esp_err.h"
 #include "esp_partition.h"
-#define VERSION_PARTITION_LABEL "version"
 #include "esp_log.h"
+#include <string.h>
+#define LED_PIN 23  // ESP32의 GPIO 23번 핀에 LED 연결
+#define VERSION_PARTITION_LABEL "version"
 #include <LiquidCrystal_I2C.h>        //LiquidCrysta_I2C 라이브러리 포함
 LiquidCrystal_I2C lcd(0x3F, 16, 2);   // I2C lcd 주소값 확인 , 16x2
 
-float my_firmware_version = 1.0;
+// 버전 설정
+const float my_firmware_version = 1.0f;
 
+void initLED() {
+    pinMode(LED_PIN, OUTPUT);
+}
+
+void blinkLED() {
+        digitalWrite(LED_PIN, HIGH);
+        delay(100);
+        digitalWrite(LED_PIN, LOW);
+        delay(100);
+    }
 void print_error(esp_err_t err) {
     char err_buf[64];  // 에러 메시지를 저장할 버퍼
     esp_err_to_name_r(err, err_buf, sizeof(err_buf));
@@ -123,7 +134,7 @@ void setup() {
     // 현재 사용 중인 파티션 이름 출력 -> "app0", "app1"
     // check_running_partition();
 
-    pinMode(LED_PIN, OUTPUT);
+    initLED();  // 버전 별 LED 초기화 함수 실행
     // read_firmware_version(); // 저장된 버전 읽기
     VisualizeFirmwareVersion();
 }
@@ -132,10 +143,5 @@ void loop() {
     // check_otadata();
     // print_partitions();
     // read_firmware_version(); // 저장된 버전 읽기
-    // delay(5000);
-    // Serial.println("Test");
-    digitalWrite(LED_PIN, HIGH);
-    delay(100);  // 🔹 app0은 500ms, app1은 100ms로 설정
-    digitalWrite(LED_PIN, LOW);
-    delay(100);
+    blinkLED();
 }

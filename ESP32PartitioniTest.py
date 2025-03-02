@@ -252,9 +252,10 @@ def erase_unused_ota_partition():
     except Exception as e:
         print(f"예외 발생: {e}")
 
-
-write_firmware("/home/alohyomora/Arduino/ledControllerV1_1/build/esp32.esp32.esp32/ledControllerV1_1.ino.bin", 3.4)
+#write_firmware("/home/alohyomora/Flask-FastAPI-Study/hardware/LEDController/build/esp32.esp32.esp32/LEDController.ino.bin", 1.0)
+write_firmware("/home/alohyomora/Flask-FastAPI-Study/hardware/LEDControllerV1_1/build/esp32.esp32.esp32/LEDControllerV1_1.ino.bin", 1.1)
 erase_unused_ota_partition()
 # read_esp_partition()
 # read_firmware_version()
+# write_firmware_version(0.0)
 # write_otadata("app1")
