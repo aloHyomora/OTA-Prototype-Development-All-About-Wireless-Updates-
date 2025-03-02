@@ -7,6 +7,8 @@
 #include "esp_partition.h"
 #define VERSION_PARTITION_LABEL "version"
 #include "esp_log.h"
+#include <LiquidCrystal_I2C.h>        //LiquidCrysta_I2C 라이브러리 포함
+LiquidCrystal_I2C lcd(0x3F, 16, 2);   // I2C lcd 주소값 확인 , 16x2
 
 float my_firmware_version = 1.0;
 
@@ -102,25 +104,38 @@ void check_otadata() {
     const esp_partition_t* boot_partition = esp_ota_get_boot_partition();
     Serial.printf("Boot partition: %s\n", boot_partition->label);
 }
+void VisualizeFirmwareVersion(){
+  lcd.init();               // lcd 초기화
+  lcd.clear();
+lcd.backlight();          // lcd 백라이트 on
+lcd.setCursor(0, 0);      // 커서를 0,0 위치에 이동
+lcd.print("It's LED Example");      
+lcd.setCursor(0, 1);      // 커서를 0,1 위치에 이동
+lcd.print("Version : ");
+lcd.setCursor(10, 1);      // 커서를 0,1 위치에 이동
+lcd.print(my_firmware_version);      // 5,1위치 부터 "World!" 출력 
+}
 void setup() {
     Serial.begin(115200);
     init_nvs();
-    print_partitions();
+    // print_partitions();
 
     // 현재 사용 중인 파티션 이름 출력 -> "app0", "app1"
-    check_running_partition();
+    // check_running_partition();
 
     pinMode(LED_PIN, OUTPUT);
     // read_firmware_version(); // 저장된 버전 읽기
+    VisualizeFirmwareVersion();
 }
 
 void loop() {
-    check_otadata();
+    // check_otadata();
     // print_partitions();
     // read_firmware_version(); // 저장된 버전 읽기
     // delay(5000);
+    // Serial.println("Test");
     digitalWrite(LED_PIN, HIGH);
-    delay(10);  // 🔹 app0은 500ms, app1은 100ms로 설정
+    delay(100);  // 🔹 app0은 500ms, app1은 100ms로 설정
     digitalWrite(LED_PIN, LOW);
-    delay(10);
+    delay(100);
 }
