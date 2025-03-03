@@ -2,9 +2,11 @@ import requests
 import hashlib
 import os
 
+from Rasberrypi_Code.esp_firmware_manager import write_firmware
+
 # Flask server details
 FLASK_SERVER = "http://192.168.0.2:5000"
-FIRMWARE_VERSION = "10.1.0"
+# FIRMWARE_VERSION = "10.1.0" For Test
 
 # 1️. Fetch the latest firmware details from the server
 response = requests.get(f"{FLASK_SERVER}/firmware/latest")
@@ -14,7 +16,7 @@ if response.status_code != 200:
 
 firmware_info = response.json()
 server_sha256 = firmware_info["sha256"]  # Expected SHA-256 hash from the server
-file_url = f"{FLASK_SERVER}/firmware/download/{FIRMWARE_VERSION}"
+file_request_url = f"{FLASK_SERVER}/firmware/download/{firmware_info["version"]}"# 
 file_name = os.path.basename(firmware_info["file_path"])  # Preserve original filename
 
 print(f"Firmware file from server: {file_name}")
@@ -23,13 +25,13 @@ print(f"Expected SHA-256 from server: {server_sha256}")
 # 2️. Download the firmware file
 
 # 저장할 폴더 경로 설정
-save_dir = "/home/aloho/firmware_OTAProject"  # 원하는 폴더 경로 설정
+save_dir = "/home/aloho/OTAProject/Firmware"  # 원하는 폴더 경로 설정
 os.makedirs(save_dir, exist_ok=True)  # 폴더가 없으면 생성
 # 전체 저장 경로
 save_file_path = os.path.join(save_dir, file_name)
 
 print("Downloading firmware...")
-response = requests.get(file_url, stream=True)
+response = requests.get(file_request_url, stream=True)
 if response.status_code != 200:
     print("Firmware download failed!")
     exit()
@@ -55,8 +57,13 @@ print(f"Computed SHA-256: {local_sha256}")
 
 # 4️. Compare the computed hash with the expected hash from the server
 if local_sha256 == server_sha256:
-    print("Integrity check passed: The file is not corrupted.")
+    print("[Perfect] Integrity check passed: The file is not corrupted.")
+    
     # TODO: Proceed with firmware update on MCU
+    import esp_firmware_manager
+    print("Firmware will be updated soon...")
+    esp_firmware_manager.write_firmware(save_file_path, float(firmware_info["version"]))
+    esp_firmware_manager.erase_unused_ota_partition()
 else:
     print("Integrity check failed: The file is corrupted!")
     os.remove(file_name)  # Delete the corrupted file
