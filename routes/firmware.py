@@ -51,6 +51,7 @@ def get_all_firmwares():
 
 @firmware_bp.route('/latest', methods=['GET'])
 def get_latest_firmware():
+    # 활성화된 버전 중 가장 높은 버전 하나를 가져옴.
     firmware = Firmware.query.filter_by(status='active').order_by(Firmware.version.desc()).first()
     if firmware:
         return jsonify({

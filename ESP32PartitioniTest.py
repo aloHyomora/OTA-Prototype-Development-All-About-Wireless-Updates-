@@ -177,16 +177,16 @@ def write_firmware(firmware_bin, firmware_version):
     새로운 펌웨어를 특정 OTA 파티션에 write하고, 현재 실행 중인 버전보다 높은 경우에만 write 수행.
     """
     try:
-        # 1️. 현재 실행 중인 펌웨어 버전 확인
-        current_version = read_firmware_version()
-        if current_version is None:
-            print("현재 펌웨어 버전 확인 실패.")
-            return
+        # # 1️. 현재 실행 중인 펌웨어 버전 확인
+        # current_version = read_firmware_version()
+        # if current_version is None:
+        #     print("현재 펌웨어 버전 확인 실패.")
+        #     return
 
-        # 2️. 새 버전이 현재 버전보다 높은 경우에만 진행
-        if firmware_version <= current_version:
-            print(f"현재 펌웨어 버전({current_version:.2f})보다 같거나 낮은 버전({firmware_version:.2f})은 업데이트하지 않습니다.")
-            return
+        # # 2️. 새 버전이 현재 버전보다 높은 경우에만 진행
+        # if firmware_version <= current_version:
+        #     print(f"현재 펌웨어 버전({current_version:.2f})보다 같거나 낮은 버전({firmware_version:.2f})은 업데이트하지 않습니다.")
+        #     return
 
         print(f"새로운 버전({firmware_version:.2f})이 확인됨. 업데이트 진행...")
 
@@ -252,8 +252,8 @@ def erase_unused_ota_partition():
     except Exception as e:
         print(f"예외 발생: {e}")
 
-#write_firmware("/home/alohyomora/Flask-FastAPI-Study/hardware/LEDController/build/esp32.esp32.esp32/LEDController.ino.bin", 1.0)
-write_firmware("/home/alohyomora/Flask-FastAPI-Study/hardware/LEDControllerV1_1/build/esp32.esp32.esp32/LEDControllerV1_1.ino.bin", 1.1)
+write_firmware("/home/alohyomora/Flask-FastAPI-Study/hardware/LEDControllerV1_0/build/esp32.esp32.esp32/LEDControllerV1_0.ino.bin", 1.0)
+# write_firmware("/home/alohyomora/Flask-FastAPI-Study/hardware/LEDControllerV1_1/build/esp32.esp32.esp32/LEDControllerV1_1.ino.bin", 1.1)
 erase_unused_ota_partition()
 # read_esp_partition()
 # read_firmware_version()

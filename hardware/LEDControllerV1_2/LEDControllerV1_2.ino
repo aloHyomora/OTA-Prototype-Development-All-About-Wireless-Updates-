@@ -19,9 +19,9 @@ void initLED() {
 
 void blinkLED() {
         digitalWrite(LED_PIN, HIGH);
-        delay(500);
+        delay(1000);
         digitalWrite(LED_PIN, LOW);
-        delay(500);
+        delay(1000);
     }
 void print_error(esp_err_t err) {
     char err_buf[64];  // 에러 메시지를 저장할 버퍼
