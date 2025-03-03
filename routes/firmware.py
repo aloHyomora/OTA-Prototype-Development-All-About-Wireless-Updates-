@@ -16,14 +16,15 @@ def download_firmware(version):
 
     # Flask 실행 디렉토리 기준으로 절대 경로 변환
     base_dir = os.getcwd()
-    absolute_path = os.path.abspath(os.path.join(base_dir, firmware.file_path.lstrip('/')))
-
+    absolute_path = '/' + firmware.file_path.lstrip('/') # os.path.abspath(os.path.join(base_dir, firmware.file_path.lstrip('/')))
     # 파일 존재 여부 확인
     if not os.path.exists(absolute_path):
+        print("Non file")
         return jsonify({"error": "Firmware file not found on server"}), 404
-
+    
     # 원래 파일명 유지하여 전송
     filename = os.path.basename(absolute_path)  # 파일명만 추출
+    print(filename)
 
     # Content-Disposition 헤더 명시적으로 설정
     headers = {

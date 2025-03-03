@@ -2,7 +2,6 @@ import requests
 import hashlib
 import os
 
-from Rasberrypi_Code.esp_firmware_manager import write_firmware
 
 # Flask server details
 FLASK_SERVER = "http://192.168.0.2:5000"
@@ -16,7 +15,7 @@ if response.status_code != 200:
 
 firmware_info = response.json()
 server_sha256 = firmware_info["sha256"]  # Expected SHA-256 hash from the server
-file_request_url = f"{FLASK_SERVER}/firmware/download/{firmware_info["version"]}"# 
+file_request_url = f"{FLASK_SERVER}/firmware/download/{firmware_info['version']}"
 file_name = os.path.basename(firmware_info["file_path"])  # Preserve original filename
 
 print(f"Firmware file from server: {file_name}")
@@ -30,7 +29,7 @@ os.makedirs(save_dir, exist_ok=True)  # 폴더가 없으면 생성
 # 전체 저장 경로
 save_file_path = os.path.join(save_dir, file_name)
 
-print("Downloading firmware...")
+print(f"Downloading firmware... {file_request_url}")
 response = requests.get(file_request_url, stream=True)
 if response.status_code != 200:
     print("Firmware download failed!")
@@ -52,7 +51,7 @@ def calculate_sha256(file_path):
             sha256_hash.update(byte_block)
     return sha256_hash.hexdigest()
 
-local_sha256 = calculate_sha256(file_name)
+local_sha256 = calculate_sha256(save_dir + '/' + file_name)
 print(f"Computed SHA-256: {local_sha256}")
 
 # 4️. Compare the computed hash with the expected hash from the server
@@ -64,6 +63,7 @@ if local_sha256 == server_sha256:
     print("Firmware will be updated soon...")
     esp_firmware_manager.write_firmware(save_file_path, float(firmware_info["version"]))
     esp_firmware_manager.erase_unused_ota_partition()
+
 else:
     print("Integrity check failed: The file is corrupted!")
     os.remove(file_name)  # Delete the corrupted file

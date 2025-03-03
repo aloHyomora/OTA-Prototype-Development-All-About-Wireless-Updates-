@@ -3,6 +3,7 @@
 # CCU(라즈베리파이)가 Flask 서버로부터 펌웨어를 다운로드할 수 있도록 구성
 
 # 필요한 모듈들을 임포트합니다.
+from pickle import TRUE
 from flask import Flask                     # Flask 애플리케이션
 from config import Config                   # DB 세팅
 from database import db                     # DB 인스턴스
@@ -29,4 +30,4 @@ if __name__ == "__main__":
         sync_firmware_directory()  # 펌웨어 파일 DB 업데이트
         print("서버 시작 전 SHA-256 동기화 및 펌웨어 추가 완료\n")
 
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=TRUE)
