@@ -252,6 +252,7 @@ def erase_unused_ota_partition():
     except Exception as e:
         print(f"예외 발생: {e}")
 
+# 최신 버전 비교, 검사 로직 제거
 write_firmware("/home/alohyomora/Flask-FastAPI-Study/hardware/LEDControllerV1_0/build/esp32.esp32.esp32/LEDControllerV1_0.ino.bin", 1.0)
 # write_firmware("/home/alohyomora/Flask-FastAPI-Study/hardware/LEDControllerV1_1/build/esp32.esp32.esp32/LEDControllerV1_1.ino.bin", 1.1)
 erase_unused_ota_partition()

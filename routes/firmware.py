@@ -4,6 +4,7 @@ from models import Firmware
 import os
 
 firmware_bp = Blueprint('firmware', __name__)
+FIRMWARE_BASE_DIR = os.path.join(os.getcwd(), "hardware")
 
 # 바이너리 펌웨어 (.bin) 파일과 함께 HTTP 200 상태 코드 및 헤더 반환
 @firmware_bp.route('/download/<version>', methods=['GET'])
@@ -100,36 +101,53 @@ def add_firmware_entry(version, file_path, sha256, status):
     db.session.add(new_firmware)
     db.session.commit()
     print(f"새 펌웨어 추가 완료: {version}")
-# 펌웨어 폴더에서 새 파일을 찾아 DB에 추가
+
+# 펌웨어 파일을 탐색하는 함수
+def find_firmware_files(base_dir):
+    firmware_files = {}
+
+    # 하위 폴더 순회하며 파일 찾기
+    for root, _, files in os.walk(base_dir):
+        for file in files:
+            if file.endswith(".ino.bin"):
+                version = os.path.basename(os.path.dirname(os.path.dirname(root))) # 폴더명(버전) 가져오기
+                firmware_files[version] = os.path.join(root, file)
+                print(f"map에 {version} 추가, 파일 {file}, path: {firmware_files[version]}")
+
+    return firmware_files
+
+# 펌웨어(hardware) 폴더 네 파일 DB와 동기화
 def sync_firmware_directory():
-    firmware_dir = os.path.join(os.getcwd(), "firmware")
+    firmware_dir = os.path.join(os.getcwd(), "hardware")
     os.makedirs(firmware_dir, exist_ok=True)  # 폴더가 없으면 생성
 
-    print("\n새 펌웨어 파일 확인 중...")
-
+    # 현재 존재하는 펌웨어 파일 검색
+    print("\n존재하는 펌웨어 파일 확인 중...")
+    firmware_map = find_firmware_files(FIRMWARE_BASE_DIR)
+    
     existing_firmware_versions = {fw.version for fw in Firmware.query.all()}  # 기존 DB 버전 가져오기
 
-    for filename in os.listdir(firmware_dir):
-        if filename.endswith(".bin"):
-            version = filename.replace(".bin", "").split("v")[-1]
-            file_path = os.path.join(firmware_dir, filename)
+    for version, path in firmware_map.items():
+        print(f"버전: {version} -> {path}")
+        version_num = (version.replace(".ino.bin", "").split("V")[-1]).replace("_",".")
 
-            # 이미 존재하는 버전이면 스킵
-            if version in existing_firmware_versions:
-                continue
-            
-            sha256_hash = calculate_sha256(file_path)
+        # 이미 존재하는 버전이면 스킵
+        if version_num in existing_firmware_versions:
+            continue
 
-            # 키보드 입력으로 status 설정
-            while True:
-                status = input(f"펌웨어 {filename}의 상태를 입력하세요 (active/deprecated): ").strip().lower()
-                if status in ["active", "deprecated"]:
-                    break
-                print("잘못된 입력! 'active' 또는 'deprecated'만 입력 가능")
+        sha256_hash = calculate_sha256(path)
+        
+        # 키보드 입력으로 status 설정
+        while True:
+            status = input(f"펌웨어 {version}의 상태를 입력하세요 (active/deprecated): ").strip().lower()
+            if status in ["active", "deprecated"]:
+                break
+            print("잘못된 입력! 'active' 또는 'deprecated'만 입력 가능")
 
-            add_firmware_entry(version, file_path, sha256_hash, status)
-
+        add_firmware_entry(version_num, path, sha256_hash, status)
+        print(f"버전: {version_num} -> {path} 동기화 확인.")
     print("펌웨어 동기화 완료!")
+
 import hashlib
 
 # SHA-256 해시값 계산 함수
@@ -149,7 +167,6 @@ def sync_sha256():
         firmwares = Firmware.query.all()  # 애플리케이션 컨텍스트 내에서 실행
 
         for firmware in firmwares:
-            base_dir = os.getcwd()
             absolute_path = '/' + firmware.file_path.lstrip('/') # os.path.join() # os.path.abspath()
 
             if os.path.exists(absolute_path):
