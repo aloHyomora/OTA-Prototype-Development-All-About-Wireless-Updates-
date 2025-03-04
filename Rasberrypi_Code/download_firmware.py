@@ -58,7 +58,7 @@ print(f"Computed SHA-256: {local_sha256}")
 if local_sha256 == server_sha256:
     print("[Perfect] Integrity check passed: The file is not corrupted.")
     
-    # TODO: Proceed with firmware update on MCU
+    # 5. Proceed with firmware update on MCU
     import esp_firmware_manager
     print("Firmware will be updated soon...")
     esp_firmware_manager.write_firmware(save_file_path, float(firmware_info["version"]))
