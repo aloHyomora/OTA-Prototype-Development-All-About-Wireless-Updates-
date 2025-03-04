@@ -22,7 +22,6 @@ print(f"Firmware file from server: {file_name}")
 print(f"Expected SHA-256 from server: {server_sha256}")
 
 # 2️. Download the firmware file
-
 # 저장할 폴더 경로 설정
 save_dir = "/home/aloho/OTAProject/Firmware"  # 원하는 폴더 경로 설정
 os.makedirs(save_dir, exist_ok=True)  # 폴더가 없으면 생성

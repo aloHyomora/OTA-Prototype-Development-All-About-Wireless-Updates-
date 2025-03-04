@@ -5,7 +5,7 @@ import struct
 
 # ESP32 연결 정보
 # TODO: Rasberry Pi 환경에 맞게 변경 필요
-ESPTOOL_PATH = "/home/alohyomora/.arduino15/packages/esp32/tools/esptool_py/4.9.dev3/esptool"
+ESPTOOL_PATH = "./.arduino15/packages/esp32/tools/esptool_py/4.9.dev3/esptool"
 SERIAL_PORT = "/dev/ttyUSB0"
 
 # ESP32 SPI Flash 정보
