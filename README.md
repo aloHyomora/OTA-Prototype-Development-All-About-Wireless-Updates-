@@ -121,7 +121,7 @@ python3 Rasberrypi_Code/esp_firmware_manager.py
 ---
 
 ## 📝 **References**  
-- [ESP32 OTA Update Official Documentation](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/protocols/esp_https_ota.html)  
+- [ESP32 OTA Update Official Documentation](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/index.html)  
 - [Flask Official Documentation](https://flask.palletsprojects.com/)  
 - [esptool.py GitHub Repository](https://github.com/espressif/esptool)  
 
